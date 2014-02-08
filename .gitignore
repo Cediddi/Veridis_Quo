@@ -1,0 +1,16 @@
+# Django Related
+*.log
+*.pot
+*.pyc
+
+#PyCharm Related
+.idea
+.iml
+
+#Linux Related
+*~
+.*
+!.gitignore
+
+#Python Related
+.coverage

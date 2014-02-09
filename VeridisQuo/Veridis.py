@@ -15,6 +15,10 @@ class Veridis:
     primitive_types = {"s": str, "i": int, "f": float, "c": complex}
 
     @classmethod
+    def __len__(cls):
+        return len(cls._load_map(cls.map_file))
+
+    @classmethod
     def _check_type(cls, data):
         """This method determines if can we dump and load the data"""
         for data_name, data_type in cls.primitive_types.items():

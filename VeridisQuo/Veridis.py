@@ -19,6 +19,10 @@ class Veridis:
         return len(cls._load_map(cls.map_file))
 
     @classmethod
+    def __getitem__(cls, item):
+        return cls.load(item+".vd")
+
+    @classmethod
     def _check_type(cls, data):
         """This method determines if can we dump and load the data"""
         for data_name, data_type in cls.primitive_types.items():

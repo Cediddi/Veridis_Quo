@@ -23,6 +23,10 @@ class Veridis:
         return cls.load(str(item)+".vd")
 
     @classmethod
+    def __delitem__(cls, item):
+        cls.load(str(item)+".vd", delete=True)
+
+    @classmethod
     def append(cls, value):
         return cls.dump(value)
 

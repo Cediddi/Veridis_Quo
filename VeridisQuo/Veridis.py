@@ -20,20 +20,20 @@ class Veridis:
 
     @classmethod
     def __getitem__(cls, item):
+        if item[-3:] == ".vd":
+            item=item[:-3]
         return cls.load(str(item)+".vd")
 
     @classmethod
     def __delitem__(cls, item):
+        if item[-3:] == ".vd":
+            item = item[:-3]
         cls.load(str(item)+".vd", delete=True)
 
     @classmethod
     def __iter__(cls):
         data_map = cls._load_map(cls.map_file)
-        output = []
-        for data_file, data_type in data_map:
-            data = decompress(cls._load_data(data_file)).decode("UTF-8")
-            output.append(cls.primitive_types[data_type](data))
-        return iter(output)
+        return iter(data_map.keys())
 
     @classmethod
     def append(cls, value):

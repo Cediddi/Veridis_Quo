@@ -23,6 +23,10 @@ class Veridis:
         return cls.load(item+".vd")
 
     @classmethod
+    def __setitem__(cls, value):
+        return cls.dump(value)
+
+    @classmethod
     def _check_type(cls, data):
         """This method determines if can we dump and load the data"""
         for data_name, data_type in cls.primitive_types.items():

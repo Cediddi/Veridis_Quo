@@ -1,7 +1,6 @@
 __author__ = 'Umut Karci'
 from os.path import expanduser, exists
-from os import makedirs, rmdir
-from time import strftime
+from os import makedirs, remove
 from gzip import compress, decompress
 import json
 
@@ -32,6 +31,11 @@ class Veridis:
                 json.dump({}, empty_map)
                 empty_map.close()
 
+    @staticmethod
+    def _key_exists(key, dict_keys):
+        if key in dict_keys:
+            return True
+        return False
 
     @classmethod
     def _dump_eval(cls, data, data_type):
@@ -39,7 +43,10 @@ class Veridis:
         cls._check_folders()
         data_map = cls._load_map(cls.map_file)
         bytes_data = str(data).encode("UTF-8")
-        file_name = strftime("%H-%M-%S__%d-%m-%y.vd")
+        initial_file_no = 0
+        while cls._key_exists(str(initial_file_no) + ".vd", data_map.keys()):
+            initial_file_no += 1
+        file_name = str(initial_file_no) + ".vd"
         data_map[file_name] = data_type
         cls._dump_data(bytes_data, file_name)
         cls._dump_map(data_map, cls.map_file)
@@ -54,8 +61,8 @@ class Veridis:
         data = decompress(read_data).decode("UTF-8")
         original_data = cls.primitive_types[data_type](data)
         if delete:
+            remove(cls.main_folder + file_name)
             del data_map[file_name]
-            rmdir(cls.main_folder + file_name)
             cls._dump_map(data_map, cls.map_file)
         return original_data
 

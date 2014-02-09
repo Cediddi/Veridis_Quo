@@ -13,7 +13,7 @@ class Veridis:
         data = Veridis.load(file_name, delete=True)"""
     main_folder = expanduser("~/.vq/")
     map_file = main_folder + ".map"
-    primitive_types = {"s": str, "r": range, "i": int, "f": float, "c": complex}
+    primitive_types = {"s": str, "i": int, "f": float, "c": complex}
 
     @classmethod
     def _check_type(cls, data):

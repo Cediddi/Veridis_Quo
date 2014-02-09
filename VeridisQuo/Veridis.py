@@ -16,31 +16,37 @@ class Veridis:
 
     @classmethod
     def __len__(cls):
+        """Returns length of saved files"""
         return len(cls._load_map(cls.map_file).keys())
 
     @classmethod
     def __getitem__(cls, item):
+        """Returns desired item"""
         if item[-3:] == ".vd":
             item=item[:-3]
         return cls.load(str(item)+".vd")
 
     @classmethod
     def __delitem__(cls, item):
+        """Deletes required item"""
         if item[-3:] == ".vd":
             item = item[:-3]
         cls.load(str(item)+".vd", delete=True)
 
     @classmethod
     def __iter__(cls):
+        """Returns an iterator for files"""
         data_map = cls._load_map(cls.map_file)
         return iter(data_map.keys())
 
     @classmethod
     def append(cls, value):
+        """Appends to saved folder"""
         return cls.dump(value)
 
     @classmethod
     def __unicode__(cls):
+        """Returns unicode representation of the Veridis"""
         return str(cls._load_map(cls.map_file))
 
     @classmethod

@@ -18,7 +18,7 @@ class Veridis:
     @classmethod
     def _check_type(cls, data):
         """This method determines if can we dump and load the data"""
-        for data_name, data_type in enumerate(cls.primitive_types):
+        for data_name, data_type in cls.primitive_types.items():
             if isinstance(data, data_type):
                 return True, data_name
 
@@ -27,12 +27,17 @@ class Veridis:
         """This method checks for main folder"""
         if not exists(cls.main_folder):
             makedirs(cls.main_folder)
+        if not exists(cls.map_file):
+            with open(cls.map_file, "w+") as empty_map:
+                json.dump({}, empty_map)
+                empty_map.close()
+
 
     @classmethod
     def _dump_eval(cls, data, data_type):
         """This method prepares data to dump, maps data and returns file_name"""
         cls._check_folders()
-        data_map = cls._load_map(cls)
+        data_map = cls._load_map(cls.map_file)
         bytes_data = str(data).encode("UTF-8")
         file_name = strftime("%H-%M-%S__%d-%m-%y.vd")
         data_map[file_name] = data_type
@@ -50,21 +55,21 @@ class Veridis:
         original_data = cls.primitive_types[data_type](data)
         if delete:
             del data_map[file_name]
-            rmdir(cls.map_file + file_name)
+            rmdir(cls.main_folder + file_name)
             cls._dump_map(data_map, cls.map_file)
         return original_data
 
     @classmethod
     def _dump_data(cls, data, file_name):
         """This method dumps given data to file"""
-        with open(cls.map_file + file_name, "wb") as dump_file:
+        with open(cls.main_folder + file_name, "w+b") as dump_file:
             dump_file.write(compress(data, compresslevel=5))
             dump_file.close()
 
     @classmethod
     def _load_data(cls, file_name):
         """This method loads data from given file_name and returns data"""
-        with open(cls.map_file + file_name, "wb") as dump_file:
+        with open(cls.main_folder + file_name, "r+b") as dump_file:
             read_data = dump_file.read()
             dump_file.close()
         return read_data
@@ -72,14 +77,14 @@ class Veridis:
     @staticmethod
     def _dump_map(map_data, map_file):
         """This method dumps map file"""
-        with open(map_file, "w") as json_file:
+        with open(map_file, "w+") as json_file:
             json.dump(map_data, json_file)
             json_file.close()
 
     @staticmethod
     def _load_map(map_file):
         """This method loads map file and returns it"""
-        with open(map_file) as json_file:
+        with open(map_file, "r+") as json_file:
             read_map = json.load(json_file)
             json_file.close()
         return read_map

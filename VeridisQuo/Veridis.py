@@ -16,18 +16,18 @@ class Veridis:
 
     @classmethod
     def __len__(cls):
-        return len(cls._load_map(cls.map_file))
+        return len(cls._load_map(cls.map_file).keys())
 
     @classmethod
     def __getitem__(cls, item):
-        return cls.load(item+".vd")
+        return cls.load(str(item)+".vd")
 
     @classmethod
-    def __setitem__(cls, value):
+    def append(cls, value):
         return cls.dump(value)
 
     @classmethod
-    def __str__(cls):
+    def __unicode__(cls):
         return str(cls._load_map(cls.map_file))
 
     @classmethod

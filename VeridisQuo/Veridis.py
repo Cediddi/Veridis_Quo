@@ -1,4 +1,9 @@
 __author__ = 'Umut Karci'
+from os.path import expanduser, exists
+from os import makedirs, rmdir
+from time import strftime
+from gzip import compress, decompress
+import json
 
 
 class Veridis:
@@ -6,43 +11,91 @@ class Veridis:
     example usage is;
         file_name = Veridis.dump(data)
         data = Veridis.load(file_name, delete=True)"""
+    main_folder = expanduser("~/.vq/")
+    map_file = main_folder + ".map"
+    primitive_types = {"s": str, "r": range, "i": int, "f": float, "c": complex}
 
     @classmethod
     def _check_type(cls, data):
         """This method determines if can we dump and load the data"""
+        for data_name, data_type in enumerate(cls.primitive_types):
+            if isinstance(data, data_type):
+                return True, data_name
 
     @classmethod
     def _check_folders(cls):
         """This method checks for main folder"""
+        if not exists(cls.main_folder):
+            makedirs(cls.main_folder)
 
     @classmethod
     def _dump_eval(cls, data, data_type):
         """This method prepares data to dump, maps data and returns file_name"""
+        cls._check_folders()
+        data_map = cls._load_map(cls)
+        bytes_data = str(data).encode("UTF-8")
+        file_name = strftime("%H-%M-%S__%d-%m-%y.vd")
+        data_map[file_name] = data_type
+        cls._dump_data(bytes_data, file_name)
+        cls._dump_map(data_map, cls.map_file)
+        return file_name
 
     @classmethod
     def _load_eval(cls, file_name, delete):
         """This method prepares data to return, if wanted, removes the data"""
+        data_map = cls._load_map(cls.map_file)
+        data_type = data_map[file_name]
+        read_data = cls._load_data(file_name)
+        data = decompress(read_data).decode("UTF-8")
+        original_data = cls.primitive_types[data_type](data)
+        if delete:
+            del data_map[file_name]
+            rmdir(cls.map_file + file_name)
+            cls._dump_map(data_map, cls.map_file)
+        return original_data
 
     @classmethod
     def _dump_data(cls, data, file_name):
         """This method dumps given data to file"""
+        with open(cls.map_file + file_name, "wb") as dump_file:
+            dump_file.write(compress(data, compresslevel=5))
+            dump_file.close()
 
     @classmethod
     def _load_data(cls, file_name):
         """This method loads data from given file_name and returns data"""
+        with open(cls.map_file + file_name, "wb") as dump_file:
+            read_data = dump_file.read()
+            dump_file.close()
+        return read_data
 
     @staticmethod
     def _dump_map(map_data, map_file):
         """This method dumps map file"""
+        with open(map_file, "w") as json_file:
+            json.dump(map_data, json_file)
+            json_file.close()
 
     @staticmethod
     def _load_map(map_file):
         """This method loads map file and returns it"""
+        with open(map_file) as json_file:
+            read_map = json.load(json_file)
+            json_file.close()
+        return read_map
 
     @classmethod
     def dump(cls, data):
         """This method dumps your data and returns a file name"""
+        can_log, data_type = cls._check_type(data)
+        if can_log:
+            file_name = cls._dump_eval(data, data_type)
+            return file_name
+        else:
+            raise Exception("Unsupported Format")
 
     @classmethod
     def load(cls, file_name, delete=False):
         """This method loads your data from the file, also removes optionally"""
+        data = cls._load_eval(file_name, delete)
+        return data

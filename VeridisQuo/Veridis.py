@@ -74,7 +74,7 @@ class Veridis:
         """This method prepares data to dump, maps data and returns file_name"""
         cls._check_folders()
         data_map = cls._load_map(cls.map_file)
-        bytes_data = str(data).encode("UTF-8")
+        bytes_data = compress(pickle.dumps(data), compresslevel=5)
         initial_file_no = 0
         while cls._key_exists(str(initial_file_no) + ".vd", data_map.keys()):
             initial_file_no += 1
@@ -89,7 +89,7 @@ class Veridis:
         """This method prepares data to return, if wanted, removes the data"""
         data_map = cls._load_map(cls.map_file)
         read_data = cls._load_data(file_name)
-        data = decompress(read_data).decode("UTF-8")
+        data = pickle.loads(decompress(read_data))
         if delete:
             remove(cls.main_folder + file_name)
             del data_map[file_name]
@@ -100,7 +100,7 @@ class Veridis:
     def _dump_data(cls, data, file_name):
         """This method dumps given data to file"""
         with open(cls.main_folder + file_name, "w+b") as dump_file:
-            dump_file.write(compress(data, compresslevel=5))
+            dump_file.write(data)
             dump_file.close()
 
     @classmethod

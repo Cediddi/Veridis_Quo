@@ -21,15 +21,15 @@ class Veridis:
     @classmethod
     def __getitem__(cls, item):
         """Returns desired item"""
-        if item[-3:] == ".vd":
-            item=item[:-3]
+        if str(item)[-3:] == ".vd":
+            item=int(item[:-3])
         return cls.load(str(item)+".vd")
 
     @classmethod
     def __delitem__(cls, item):
         """Deletes required item"""
-        if item[-3:] == ".vd":
-            item = item[:-3]
+        if str(item)[-3:] == ".vd":
+            item = int(item[:-3])
         cls.load(str(item)+".vd", delete=True)
 
     @classmethod
@@ -129,7 +129,7 @@ class Veridis:
     @classmethod
     def dump(cls, data):
         """This method dumps your data and returns a file name"""
-        can_log, data_type = cls._check_type(data)
+        data_type = cls._check_type(data)
         file_name = cls._dump_eval(data, data_type)
         return file_name
 

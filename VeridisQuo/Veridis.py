@@ -1,7 +1,7 @@
 __author__ = 'Umut Karci'
-from os.path import expanduser, exists
-from os import makedirs, remove
+from os import makedirs, remove, path
 from gzip import compress, decompress
+import pickle
 import json
 
 
@@ -10,7 +10,7 @@ class Veridis:
     example usage is;
         file_name = Veridis.dump(data)
         data = Veridis.load(file_name, delete=True)"""
-    main_folder = expanduser("~/.vq/")
+    main_folder = path.expanduser("~/.vq/")
     map_file = main_folder + ".map"
 
     @classmethod
@@ -56,9 +56,9 @@ class Veridis:
     @classmethod
     def _check_folders(cls):
         """This method checks for main folder"""
-        if not exists(cls.main_folder):
+        if not path.exists(cls.main_folder):
             makedirs(cls.main_folder)
-        if not exists(cls.map_file):
+        if not path.exists(cls.map_file):
             with open(cls.map_file, "w+") as empty_map:
                 json.dump({}, empty_map)
                 empty_map.close()

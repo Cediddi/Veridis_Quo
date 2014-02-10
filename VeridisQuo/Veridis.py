@@ -12,7 +12,6 @@ class Veridis:
         data = Veridis.load(file_name, delete=True)"""
     main_folder = expanduser("~/.vq/")
     map_file = main_folder + ".map"
-    primitive_types = {"s": str, "i": int, "f": float, "c": complex}
 
     @classmethod
     def __len__(cls):
@@ -52,9 +51,7 @@ class Veridis:
     @classmethod
     def _check_type(cls, data):
         """This method determines if can we dump and load the data"""
-        for data_name, data_type in cls.primitive_types.items():
-            if isinstance(data, data_type):
-                return True, data_name
+        return str(type(data))[8:-2]
 
     @classmethod
     def _check_folders(cls):
@@ -91,15 +88,13 @@ class Veridis:
     def _load_eval(cls, file_name, delete):
         """This method prepares data to return, if wanted, removes the data"""
         data_map = cls._load_map(cls.map_file)
-        data_type = data_map[file_name]
         read_data = cls._load_data(file_name)
         data = decompress(read_data).decode("UTF-8")
-        original_data = cls.primitive_types[data_type](data)
         if delete:
             remove(cls.main_folder + file_name)
             del data_map[file_name]
             cls._dump_map(data_map, cls.map_file)
-        return original_data
+        return data
 
     @classmethod
     def _dump_data(cls, data, file_name):
@@ -135,11 +130,8 @@ class Veridis:
     def dump(cls, data):
         """This method dumps your data and returns a file name"""
         can_log, data_type = cls._check_type(data)
-        if can_log:
-            file_name = cls._dump_eval(data, data_type)
-            return file_name
-        else:
-            raise Exception("Unsupported Format")
+        file_name = cls._dump_eval(data, data_type)
+        return file_name
 
     @classmethod
     def load(cls, file_name, delete=False):
